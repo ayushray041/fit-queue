@@ -1,5 +1,6 @@
 const express = require("express");
 const authRoutes = require("./auth");
+const sessionRoutes = require("./sessions");
 const { authenticate, requireAdmin } = require("./middleware");
 
 const app = express();
@@ -13,6 +14,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 app.get("/api/me", authenticate, (req, res) => {
   res.json({
