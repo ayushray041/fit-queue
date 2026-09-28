@@ -1,11 +1,13 @@
 const express = require("express");
 const authRoutes = require("./auth");
 const sessionRoutes = require("./sessions");
+const bookingRoutes = require("./bookings");
 const { authenticate, requireAdmin } = require("./middleware");
 
 const app = express();
 
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
   res.json({
@@ -15,7 +17,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/sessions", sessionRoutes);
-
+app.use("/api", bookingRoutes);
 app.get("/api/me", authenticate, (req, res) => {
   res.json({
     user: req.user
