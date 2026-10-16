@@ -69,6 +69,29 @@ npm run dev
 
 Open the local URL shown in the terminal.
 
+
+## Stack and Data Model
+- Frontend: React and Vite; backend: Node.js and Express.
+- Database: PostgreSQL hosted on Supabase.
+- Authentication: JWT; users have MEMBER or ADMIN roles.
+- Sessions store dates, start times, and capacity.
+- Bookings link members to sessions; the waitlist manages full sessions.
+- Assumption: session capacity is 20 seats.
+- The backend checks authentication and permissions for protected actions.
+
+## Setup Instructions
+1. Clone the repository and install dependencies in `server` and `client`.
+2. Configure `DATABASE_URL` and `JWT_SECRET` in `server/.env`.
+3. Configure `VITE_API_URL=http://localhost:5001` in `client/.env.local`.
+4. Start the backend with `npm start` and the frontend with `npm run dev`.
+
+## Reviewer Test Accounts
+- ADMIN email: REPLACE_WITH_DEMO_ADMIN_EMAIL
+- ADMIN password: REPLACE_WITH_DEMO_ADMIN_PASSWORD
+- MEMBER email: REPLACE_WITH_DEMO_MEMBER_EMAIL
+- MEMBER password: REPLACE_WITH_DEMO_MEMBER_PASSWORD
+
+
 ## Repository
 
 https://github.com/ayushray041/fit-queue
