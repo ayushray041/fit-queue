@@ -1,73 +1,44 @@
 
-# FitQueue — Session Booking System
+# FitQueue
 
-FitQueue is a web-based session booking application that helps members reserve places in training sessions. Users can view upcoming sessions, book available seats, manage reservations, and join a waitlist when a session is full.
+FitQueue is a session booking website I built for my Byte Society web development project. Users can create an account, log in, check upcoming training sessions, and book a seat.
 
-## Live Demo
+I also added a waitlist feature for sessions that are full. When someone cancels their booking, the next person on the waitlist can get the available seat.
 
-- **Website:** https://fit-queue.vercel.app
-- **Backend API:** https://fit-queue.onrender.com
-- **GitHub Repository:** https://github.com/ayushray041/fit-queue
+## Live Website
+
+https://fit-queue.vercel.app
 
 ## Features
 
-- User registration and login
-- View upcoming training sessions and remaining seats
-- Book available sessions
-- Unique booking codes for reservations
+- Register and log in
+- View upcoming sessions and available seats
+- Book a session and get a booking code
+- Cancel a booking
 - Join a waitlist when a session is full
-- Cancel eligible bookings
-- Automatic promotion of the next waitlisted member when a seat becomes available
-- Admin access for creating sessions
+- Automatically promote the next person on the waitlist when a seat becomes available
+- Admin access to create sessions
 
-## Technology Stack
+## Tech Stack
 
-**Frontend:** React, Vite  
-**Backend:** Node.js, Express.js  
-**Database:** PostgreSQL with Supabase  
-**Authentication:** JSON Web Tokens (JWT)  
-**Deployment:** Vercel (frontend) and Render (backend)
-
-## Project Structure
-
-```text
-fit-queue/
-├── client/       # React frontend
-├── server/       # Express backend and API
-└── README.md     # Project documentation
-```
+- Frontend: React and Vite
+- Backend: Node.js and Express
+- Database: PostgreSQL with Supabase
+- Authentication: JWT
+- Deployment: Vercel and Render
 
 ## Run Locally
 
-### Requirements
+You need Node.js, npm, and a Supabase database.
 
-- Node.js and npm
-- A Supabase PostgreSQL database
-- Git
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/ayushray041/fit-queue.git
-cd fit-queue
-```
-
-### 2. Configure the backend
+### Backend
 
 ```bash
 cd server
 npm install
 ```
 
-Create a `.env` file inside the `server` directory:
-
-```env
-PORT=5001
-DATABASE_URL=your_supabase_connection_string
-JWT_SECRET=your_private_jwt_secret
-```
-
-Replace the placeholder values with your own private configuration.
+Create a `.env` file in the `server` folder with your database connection string and JWT secret. Keep these values private.
 
 Start the backend:
 
@@ -75,16 +46,16 @@ Start the backend:
 npm start
 ```
 
-### 3. Configure the frontend
+### Frontend
 
-Open a second terminal from the project root:
+Open another terminal from the project root:
 
 ```bash
 cd client
 npm install
 ```
 
-Create a `.env.local` file inside `client`:
+Create a `.env.local` file in the `client` folder and add:
 
 ```env
 VITE_API_URL=http://localhost:5001
@@ -96,16 +67,8 @@ Start the frontend:
 npm run dev
 ```
 
-Open the local URL printed by Vite in your browser.
+Open the local URL shown in the terminal.
 
-Ensure the backend port matches `VITE_API_URL` and that the database connection is configured correctly.
+## Repository
 
-## Environment Variables
-
-Keep credentials private. Never commit `.env` or `.env.local` files containing real passwords, database URLs, or JWT secrets.
-
-For production, configure the backend environment variables on Render and the frontend variable `VITE_API_URL` on Vercel.
-
-## Project Goal
-
-FitQueue demonstrates a simple session booking workflow, including authentication, seat availability, reservation management, and waitlist handling.
+https://github.com/ayushray041/fit-queue
