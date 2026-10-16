@@ -61,6 +61,7 @@ function App() {
     () => localStorage.getItem("fitqueue_token") || ""
   );
   const [user, setUser] = useState(getSavedUser);
+  const [roleVerified, setRoleVerified] = useState(false);
 
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
@@ -74,6 +75,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [authBusy, setAuthBusy] = useState(false);
   const [busyAction, setBusyAction] = useState("");
+  const [sessionDate, setSessionDate] = useState("");
+  const [startHour, setStartHour] = useState("9");
+  const [sessionBusy, setSessionBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -107,13 +111,16 @@ function App() {
       setLoading(true);
 
       try {
-        const [sessionData, bookingData, waitlistData] = await Promise.all([
+        const [meData, sessionData, bookingData, waitlistData] = await Promise.all([
+  apiRequest("/api/me", {}, token),
   apiRequest("/api/sessions", {}, token),
   apiRequest("/api/bookings", {}, token),
   apiRequest("/api/waitlist", {}, token),
 ]);
 
 if (active) {
+  setUser((previous) => ({ ...(previous || {}), role: meData.user.role }));
+  setRoleVerified(true);
   setSessions(sessionData.sessions || []);
   setBookings(bookingData.bookings || []);
 
@@ -128,6 +135,7 @@ if (active) {
       } catch (err) {
         if (active) {
           setError(err.message);
+          setRoleVerified(false);
 
           if (err.status === 401) {
             localStorage.removeItem("fitqueue_token");
@@ -174,6 +182,7 @@ if (active) {
 
       setUser(result.user);
       setToken(result.token);
+      setRoleVerified(true);
       setPassword("");
       setNotice(
         mode === "register"
@@ -193,6 +202,7 @@ if (active) {
 
     setToken("");
     setUser(null);
+    setRoleVerified(false);
     setSessions([]);
     setBookings([]);
     setWaitlisted([]);
@@ -286,6 +296,43 @@ if (active) {
       setBusyAction("");
     }
   }
+
+  async function handleCreateSession(event) {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+    setSessionBusy(true);
+
+    try {
+      const result = await apiRequest(
+        "/api/sessions",
+        {
+          method: "POST",
+          body: {
+            date: sessionDate,
+            startHour: Number(startHour),
+          },
+        },
+        token
+      );
+
+      setNotice(result.message || "Session created successfully.");
+
+      try {
+        await refreshDashboard();
+      } catch (refreshError) {
+        setError(
+          `Session created, but the session list could not refresh: ${refreshError.message}`
+        );
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSessionBusy(false);
+    }
+  }
+
+  const isAdmin = roleVerified && user?.role === "ADMIN";
 
   const upcomingSessions = sessions.filter(
     (session) => new Date(session.starts_at) > new Date()
@@ -465,7 +512,9 @@ if (active) {
       <main className="dashboard" id="dashboard">
         <section className="welcome-row">
           <div>
-            <span className="eyebrow">MEMBER DASHBOARD</span>
+            <span className="eyebrow">
+              {isAdmin ? "ADMIN DASHBOARD" : "MEMBER DASHBOARD"}
+            </span>
             <h1>Good to see you, {user?.name?.split(" ")[0] || "there"}.</h1>
             <p className="muted">
               Find a session, reserve your place, and keep your routine moving.
@@ -492,6 +541,50 @@ if (active) {
               ×
             </button>
           </div>
+        )}
+
+        {isAdmin && (
+          <section className="side-card">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">ADMIN TOOLS</span>
+                <h2>Create a session</h2>
+              </div>
+            </div>
+            <form className="auth-form" onSubmit={handleCreateSession}>
+              <label>
+                Date
+                <input
+                  type="date"
+                  value={sessionDate}
+                  onChange={(event) => setSessionDate(event.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Start hour
+                <select
+                  value={startHour}
+                  onChange={(event) => setStartHour(event.target.value)}
+                  required
+                >
+                  {Array.from({ length: 24 }, (_, hour) => (
+                    <option key={hour} value={hour}>
+                      {String(hour).padStart(2, "0")}:00
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="muted">Each session has a capacity of 20 seats.</p>
+              <button
+                className="button button-primary"
+                type="submit"
+                disabled={sessionBusy}
+              >
+                {sessionBusy ? "Creating session..." : "Create session"}
+              </button>
+            </form>
+          </section>
         )}
 
         <section className="stats-grid">
